@@ -60,12 +60,41 @@ def importar_routes(conexao):
     print(f"{len(linhas)} linhas importadas")
 
 
+def importar_trips(conexao):
+    caminho = PASTA_GTFS / "trips.txt"
+
+    with open(caminho, encoding="utf-8-sig", newline="") as arquivo:
+        leitor = csv.DictReader(arquivo)
+        linhas = [
+            (
+                trip["trip_id"],
+                trip["route_id"],
+                trip["service_id"],
+                trip["trip_headsign"],
+                trip["trip_short_name"],
+                int(trip["direction_id"]),
+                trip["shape_id"],
+            )
+            for trip in leitor
+        ]
+
+    conexao.executemany(
+        "INSERT INTO trips (trip_id, route_id, service_id, trip_headsign, trip_short_name, direction_id, shape_id) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        linhas,
+    )
+    conexao.commit()
+    print(f"{len(linhas)} viagens importadas")
+
+
 def main():
     conexao = criar_banco()
     importar_stops(conexao)
     importar_routes(conexao)
+    importar_trips(conexao)
     conexao.close()
 
 
 if __name__ == "__main__":
     main()
+    

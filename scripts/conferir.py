@@ -4,6 +4,7 @@ conexao = sqlite3.connect("dados/rio.db")
 
 print("Paradas:", conexao.execute("SELECT COUNT(*) FROM stops").fetchone()[0])
 print("Linhas:", conexao.execute("SELECT COUNT(*) FROM routes").fetchone()[0])
+print("Viagens", conexao.execute("SELECT COUNT(*) FROM trips").fetchone()[0])
 print("Exemplos:")
 for parada in conexao.execute("SELECT * FROM stops LIMIT 3"):
     print(" ", parada)
