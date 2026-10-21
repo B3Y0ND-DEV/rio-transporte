@@ -7,6 +7,9 @@ PASTA_GTFS = RAIZ / "dados" / "gtfs" / "gtfs"
 ARQUIVO_SCHEMA = RAIZ / "sql" / "schema.sql"
 ARQUIVO_BANCO = RAIZ / "dados" / "rio.db"
 
+TAMANHO_LOTE = 50_000
+
+
 
 def criar_banco():
     if ARQUIVO_BANCO.exists():
@@ -14,6 +17,13 @@ def criar_banco():
     conexao = sqlite3.connect(ARQUIVO_BANCO)
     conexao.executescript(ARQUIVO_SCHEMA.read_text(encoding="utf-8"))
     return conexao
+
+def hora_para_segundos(texto):
+    if not texto:
+        return  None
+    horas, minutos, segundos = texto.split(":")
+    return int(horas) * 3600 + int(minutos) * 60 + int(segundos)
+
 
 
 def importar_stops(conexao):
@@ -86,12 +96,61 @@ def importar_trips(conexao):
     conexao.commit()
     print(f"{len(linhas)} viagens importadas")
 
+   
+def gravar_lote(conexao, lote):
+    conexao.executemany(
+        "INSERT INTO stop_times (trip_id, stop_sequence, stop_id, arrival_time, departure_time)"
+        "VALUES (?, ?, ?, ?, ?)",
+        lote,
+    )
+    conexao.commit()
+
+def importar_stop_times(conexao):
+    caminho = PASTA_GTFS / "stop_times.txt" 
+    total = 0
+    lote = []
+
+    with open(caminho, encoding="utf-8-sig", newline="") as arquivo:
+        leitor = csv.DictReader(arquivo)
+        for linha in leitor:
+            lote.append(
+              (
+                linha["trip_id"],
+                int(linha["stop_sequence"]),
+                linha["stop_id"],
+                hora_para_segundos(linha["arrival_time"]),
+                hora_para_segundos(linha["departure_time"]),
+              )   
+        ) 
+        if len(lote) >= TAMANHO_LOTE:
+            gravar_lote(conexao, lote)
+            total += len(lote)
+            lote = []
+            print(f" {total} horários importados...")    
+
+    if lote:
+        gravar_lote(conexao, lote)
+        total += len(lote)
+
+
+    print(f"{total} horários importados ")            
+
+
+def criar_indices(conexao):
+    conexao.execute("CREATE INDEX idx_stop_times_stop ON stop_times (stop_id)")
+    conexao.execute("CREATE INDEX idx_trips_route ON trips (route_id)")
+    conexao.commit()
+    print("índices criados")
+
+
 
 def main():
     conexao = criar_banco()
     importar_stops(conexao)
     importar_routes(conexao)
     importar_trips(conexao)
+    importar_stop_times(conexao)
+    criar_indices(conexao)
     conexao.close()
 
 

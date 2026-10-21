@@ -32,3 +32,5 @@ CREATE TABLE stop_times (
   departure_time INTEGER,
   PRIMARY KEY (trip_id, stop_sequence)
 );
+
+
