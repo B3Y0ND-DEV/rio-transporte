@@ -2,6 +2,7 @@ const express = require("express");
 const { DatabaseSync } = require("node:sqlite");
 const path = require("node:path");
 const { error } = require("node:console");
+const { json } = require("node:stream/consumers");
 
 
 const app = express();
@@ -23,6 +24,62 @@ const consultaLinhas = banco.prepare(`
     WHERE st.stop_id = ?
     ORDER BY r.route_short_name
 `);
+
+
+const consultaCaixa = banco.prepare(`
+    SELECT stop_id, stop_name, stop_lat, stop_lon
+    FROM stops
+    WHERE stop_lat BETWEEN ? AND ?
+        AND stop_lon BETWEEN ? AND ?
+    `);
+
+function distanciaMetros(lat1, lon1, lat2, lon2) {
+    const R = 6371000; 
+    const toRad = (valor) => (valor * Math.PI) / 180;
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const  c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    
+    return R * c;
+
+}
+
+
+
+
+
+app.get("/paradas/proximas", (req, res) => {
+    const lat = Number(req.query.lat);
+    const lon = Number(req.query.lon);
+    const raio = Math.min(Number(req.query.raio ?? 500), 2000);
+
+    if (Number.isNaN(lat) || Number.isNaN(lon) || Number.isNaN(raio)) {
+        return res.status(400).json({ erro: "Informe lat e lon como números (raio em metros é opcional)"})
+    }
+
+    const grausLat = raio / 111320;
+    const grausLon = grausLat / Math.cos((lat * Math.PI) / 180);
+
+    const candidatas = consultaCaixa.all(lat - grausLat, lat + grausLat, lon - grausLon, lon + grausLon);
+
+    const proximas = candidatas
+        .map((p) => ({ ...p, distancia_m: Math.round(distanciaMetros(lat, lon, p.stop_lat, p.stop_lon)) }))
+        .filter((p) => p.distancia_m <= raio)
+        .sort((a, b) => a.distancia_m - b.distancia_m)
+        .slice(0, 10);
+
+        res.json(proximas);
+
+});
+
+
 
 app.get("/paradas/:id/linhas", (req, res) =>  {
     const linhas = consultaLinhas.all(req.params.id);
