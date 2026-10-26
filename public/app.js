@@ -58,3 +58,25 @@ async function buscarParadas(lat, lon) {
 mapa.on("click", (evento) => {
     buscarParadas(evento.latlng.lat, evento.latlng.lng);
 });
+
+const botaoLocal = document.getElementById("btn-local");
+
+botaoLocal.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+        const centro = mapa.getCenter();
+        mostrarAviso(centro.lat, centro.lng, "Seu navegador não suporta localização");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (posicao) => {
+            const { latitude, longitude } = posicao.coords;
+            mapa.setView([latitude, longitude], 16);
+            buscarParadas(latitude, longitude);
+        },
+        () => {
+            const centro = mapa.getCenter();
+            mostrarAviso(centro.lat, centro.lng, "Não foi possível obter sua localização. Verifique a permissão do navegador.");
+        }
+    );
+});
