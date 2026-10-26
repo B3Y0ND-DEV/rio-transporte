@@ -6,6 +6,7 @@ const { json } = require("node:stream/consumers");
 
 
 const app = express();
+app.use(express.static(path.join(__dirname, "..", "public")));
 const PORTA = 3000;
 
 
