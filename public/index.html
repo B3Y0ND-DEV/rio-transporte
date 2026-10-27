@@ -3,28 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rio Transporte</title>
+    <title>BUS-F0UND</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
-  <style>
-       html, body { height: 100%; margin: 0; }
-    #mapa { height: 100%; }
-
-    #btn-local {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  padding: 8px 12px;
-  font-size: 14px;
-  cursor: pointer;
-}
-  </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="mapa"></div>
-    <button id="btn-local" type="button">Usar minha localização</button>
+    <main class="app">
+        <header class="topo">
+            <div>
+                <h1>BUS-F0UND</h1>
+                <p>ÔNIBUS DO RIO, SEM ANÚNCIOS</p>
+            </div>
+            <span class="ponto" aria-hidden="true"></span>
+        </header>
+
+        <div id="mapa" class="mapa"></div>
+
+        <section class="cartao" aria-live="polite">
+            <p class="rotulo">PARADA</p>
+            <h2 id="nome-parada">TOQUE NO MAPA</h2>
+            <p id="info-parada" class="info">Toque em um ponto do mapa ou use a sua localização para ver as paradas por perto.</p>
+            <ul id="linhas" class="linhas"></ul>
+            <button id="btn-local" type="button" class="botao">
+                <span class="ponto" aria-hidden="true"></span>USAR MINHA LOCALIZAÇÃO
+            </button>
+        </section>
+
+        <nav class="menu" aria-label="Navegação principal">
+            <button type="button" class="aba ativa" aria-current="page">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/></svg>
+                INÍCIO
+            </button>
+            <button type="button" class="aba" disabled title="Em breve" aria-label="Linhas (em breve)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="14" rx="3"/><path d="M5 12h14M8 21v-3M16 21v-3"/></svg>
+                LINHAS
+            </button>
+            <button type="button" class="aba" disabled title="Em breve" aria-label="Alertas (em breve)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/></svg>
+                ALERTAS
+            </button>
+            <button type="button" class="aba" disabled title="Em breve" aria-label="Melhorias (em breve)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
+                MELHORIAS
+            </button>
+        </nav>
+    </main>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
     <script src="app.js"></script>
-    
 </body>
 </html>
