@@ -7,10 +7,10 @@ const { json } = require("node:stream/consumers");
 
 const app = express();
 app.use(express.static(path.join(__dirname, "..", "public")));
-const PORTA = 3000;
+const PORTA = process.env.PORT || 3000;
 
 
-const caminhoBanco = path.join(__dirname, "..", "dados", "rio.db");
+const caminhoBanco = process.env.DB_PATH || path.join(__dirname, "..", "dados", "rio.db");
 const banco = new DatabaseSync(caminhoBanco, { readOnly: true} );
 
 const consultaParada = banco.prepare(
