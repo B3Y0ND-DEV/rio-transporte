@@ -11,6 +11,7 @@
 html, body {
     height: 100%;
     margin: 0;
+    overflow: hidden; /* Evita barras de rolagem indesejadas no fundo */
 }
 
 body {
@@ -19,58 +20,38 @@ body {
     font-family: "Space Mono", monospace;
 }
 
+/* O container principal agora ocupa a tela inteira como um "app shell" */
 .app {
-    max-width: 430px;
+    position: relative;
+    width: 100%;
+    max-width: 430px; /* Mantém a proporção de telemóvel no desktop/preview */
     height: 100%;
     height: 100dvh;
     margin: 0 auto;
-    padding: 20px 16px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.topo {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 8px;
-}
-
-h1 {
-    margin: 0;
-    font-family: Doto, monospace;
-    font-weight: 900;
-    font-size: 26px;
-    letter-spacing: 0.04em;
-}
-
-.topo p {
-    margin: 4px 0 0;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--texto-suave);
-}
-
-.ponto {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--azul);
-}
-
-.mapa {
-    flex: 1;
-    min-height: 180px;
-    border-radius: 28px;
     overflow: hidden;
+}
+
+/* O MAPA OCUPA A TELA TODA AO FUNDO */
+.mapa {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
     background: #DDD7C8;
 }
 
 .leaflet-container { font-family: inherit; }
 .leaflet-tile-pane { filter: grayscale(1) contrast(1.05) brightness(1.04); }
+.leaflet-top.leaflet-left { margin-top: 0; }
+.leaflet-top.leaflet-right { margin-top: 112px; }   /* zoom fica abaixo do cabeçalho */
 
+.leaflet-control-attribution {
+    font-size: 10px;
+    background: rgba(232, 227, 214, 0.9);
+}
+
+.leaflet-control-attribution a { color: var(--preto); }
 .parada {
     border-radius: 50%;
     background: var(--preto);
@@ -80,19 +61,93 @@ h1 {
 
 .parada.escolhida { background: var(--azul); }
 
+.evento {
+    background: var(--azul);
+    border: 3px solid var(--bege);
+    border-radius: 50%;
+}
+
+.evento::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid var(--azul);
+    animation: eco 2.4s ease-out infinite;
+}
+
+@keyframes eco {
+    from { transform: scale(1); opacity: 0.7; }
+    to { transform: scale(3); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .evento::after { animation: none; }
+}
+
+/* TOPO FLUTUANTE (Cabeçalho do App) */
+.topo {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(17, 17, 17, 0.85);
+    
+    padding: 12px 16px;
+    border-radius: 20px;
+    color: var(--bege);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+h1 {
+    margin: 0;
+    font-family: Doto, monospace;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    color: var(--bege);
+}
+
+.topo p {
+    margin: 2px 0 0;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--cinza-claro);
+}
+
+.ponto {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--azul);
+}
+
+/* CARTÃO FLUTUANTE EM BAIXO */
 .cartao {
+    position: absolute;
+    bottom: 80px; /* Fica acima do menu inferior */
+    left: 16px;
+    right: 16px;
+    z-index: 10;
     background: var(--preto);
     color: var(--bege);
-    border-radius: 28px;
-    padding: 20px;
+    border-radius: 24px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    
 }
 
 .rotulo {
     margin: 0;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.12em;
     color: var(--cinza-claro);
 }
@@ -101,15 +156,15 @@ h1 {
     margin: 0;
     font-family: Doto, monospace;
     font-weight: 900;
-    font-size: 30px;
+    font-size: 24px;
     line-height: 1;
     text-transform: uppercase;
 }
 
 .info {
     margin: 0;
-    font-size: 12px;
-    line-height: 1.4;
+    font-size: 11px;
+    line-height: 1.3;
     color: var(--cinza-claro);
 }
 
@@ -119,18 +174,18 @@ h1 {
     padding: 0;
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    max-height: 84px;
+    gap: 6px;
+    max-height: 70px;
     overflow-y: auto;
 }
 
 .linhas:empty { display: none; }
 
 .linhas li {
-    padding: 6px 12px;
+    padding: 4px 10px;
     border: 1.5px solid var(--bege);
     border-radius: 999px;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .linhas li:first-child {
@@ -140,45 +195,54 @@ h1 {
 }
 
 .botao {
-    height: 48px;
+    height: 44px;
     border: 0;
     border-radius: 999px;
     background: var(--bege);
     color: var(--preto);
-    font: 700 13px "Space Mono", monospace;
+    font: 700 12px "Space Mono", monospace;
     letter-spacing: 0.08em;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 }
 
-.botao .ponto { width: 10px; height: 10px; }
+.botao .ponto { width: 8px; height: 8px; }
+a.botao { text-decoration: none; }
 
+/* MENU DE NAVEGAÇÃO FLUTUANTE (Inferior) */
 .menu {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 10;
     background: var(--preto);
     border-radius: 999px;
-    padding: 6px;
+    padding: 4px;
     display: flex;
     gap: 4px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .aba {
     position: relative;
     flex: 1;
-    height: 52px;
+    height: 46px;
     border: 0;
     border-radius: 999px;
     background: transparent;
     color: var(--cinza-claro);
-    font: 700 10px "Space Mono", monospace;
+    font: 700 9px "Space Mono", monospace;
     letter-spacing: 0.04em;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 2px;
+    cursor: pointer;
 }
 
 .aba.ativa { background: #2A2A2A; color: var(--bege); }
@@ -186,15 +250,73 @@ h1 {
 .aba.ativa::after {
     content: "";
     position: absolute;
-    top: 7px;
-    right: calc(50% - 16px);
-    width: 6px;
-    height: 6px;
+    top: 6px;
+    right: calc(50% - 14px);
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: var(--azul);
 }
 
-.aba:disabled { cursor: not-allowed; opacity: 0.7; }
+.aba:disabled { cursor: not-allowed; opacity: 0.6; }
 
 :focus-visible { outline: 3px solid var(--azul); outline-offset: 3px; }
 .cartao :focus-visible, .menu :focus-visible { outline-color: var(--bege); }
+
+/* ESTILOS PARA PAINÉIS SECUNDÁRIOS (Como Melhorias) */
+.secao {
+    position: absolute;
+    inset: 0;
+    padding-top: 112px; /* Espaço para o topo flutuante */
+    padding-bottom: 90px; /* Espaço para o menu inferior */
+    display: flex;
+    flex-direction: column;
+}
+
+.secao:not(.ativa) {
+    display: none !important;
+}
+
+.cartao-painel {
+    margin: 16px;
+    background: var(--preto);
+    color: var(--bege);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.cartao-painel h2 {
+    margin: 0;
+    font-family: Doto, monospace;
+    font-weight: 900;
+    font-size: 24px;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.formulario-feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.formulario-feedback textarea {
+    width: 100%;
+    background: #1A1A1A;
+    border: 1.5px solid var(--cinza-claro);
+    border-radius: 16px;
+    padding: 14px;
+    color: var(--bege);
+    font-family: "Space Mono", monospace;
+    font-size: 13px;
+    resize: none;
+    outline: none;
+}
+
+.formulario-feedback textarea:focus {
+    border-color: var(--azul);
+}

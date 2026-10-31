@@ -20,32 +20,53 @@
             <span class="ponto" aria-hidden="true"></span>
         </header>
 
-        <div id="mapa" class="mapa"></div>
+        <!-- TELA 1: INÍCIO (Mapa + Cartão de Paradas) -->
+        <div id="secao-inicio" class="secao ativa">
+            <div id="mapa" class="mapa"></div>
 
-        <section class="cartao" aria-live="polite">
-            <p class="rotulo">PARADA</p>
-            <h2 id="nome-parada">TOQUE NO MAPA</h2>
-            <p id="info-parada" class="info">Toque em um ponto do mapa ou use a sua localização para ver as paradas por perto.</p>
-            <ul id="linhas" class="linhas"></ul>
-            <button id="btn-local" type="button" class="botao">
-                <span class="ponto" aria-hidden="true"></span>USAR MINHA LOCALIZAÇÃO
-            </button>
-        </section>
+            <section class="cartao" aria-live="polite">
+                <p class="rotulo">PARADA</p>
+                <h2 id="nome-parada">TOQUE NO MAPA</h2>
+                <p id="info-parada" class="info">Toque em um ponto do mapa ou use a sua localização para ver as paradas por perto.</p>
+                <ul id="linhas" class="linhas"></ul>
+                <button id="btn-local" type="button" class="botao">
+                    <span class="ponto" aria-hidden="true"></span>USAR MINHA LOCALIZAÇÃO
+                </button>
+            </section>
+        </div>
 
+        <!-- TELA 4: MELHORIAS (Feedback do Usuário) -->
+        <div id="secao-melhorias" class="secao" style="display: none;">
+            <section class="cartao-painel">
+                <p class="rotulo">FEEDBACK & IDEIAS</p>
+                <h2>MELHORIAS</h2>
+                <p class="info">O BUS-F0UND é construído para a comunidade. O que gostaria de ver nas próximas versões?</p>
+                
+                <form id="form-melhoria" class="formulario-feedback">
+                    <textarea id="texto-melhoria" rows="4" placeholder="Ex: Adicionar favoritos, horários previstos..." required></textarea>
+                    <button type="submit" class="botao">
+                        <span class="ponto" aria-hidden="true"></span>ENVIAR SUGESTÃO
+                    </button>
+                </form>
+                <p id="msg-sucesso" class="info" style="color: var(--azul); display: none; margin-top: 8px;">✓ Sugestão enviada com sucesso!</p>
+            </section>
+        </div>
+
+        <!-- MENU DE NAVEGAÇÃO INFERIOR -->
         <nav class="menu" aria-label="Navegação principal">
-            <button type="button" class="aba ativa" aria-current="page">
+            <button type="button" class="aba ativa" data-alvo="inicio">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/></svg>
                 INÍCIO
             </button>
-            <button type="button" class="aba" disabled title="Em breve" aria-label="Linhas (em breve)">
+            <button type="button" class="aba" data-alvo="linhas" disabled title="Em breve">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="14" rx="3"/><path d="M5 12h14M8 21v-3M16 21v-3"/></svg>
                 LINHAS
             </button>
-            <button type="button" class="aba" disabled title="Em breve" aria-label="Alertas (em breve)">
+            <button type="button" class="aba" data-alvo="alertas" disabled title="Em breve">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 0112 0v5l2 2H4z"/><path d="M10 21h4"/></svg>
                 ALERTAS
             </button>
-            <button type="button" class="aba" disabled title="Em breve" aria-label="Melhorias (em breve)">
+            <button type="button" class="aba" data-alvo="melhorias">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
                 MELHORIAS
             </button>
